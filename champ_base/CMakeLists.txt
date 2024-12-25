@@ -33,27 +33,6 @@ set(dependencies
   champ
 )
 
-
-# #Download velocity smoother
-# set(YOCS_URL "https://github.com/chvmp/yocs_velocity_smoother")
-# set(YOCS_DOWNLOAD_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-# set(YOCS_DEPENDENCY_PATH ${YOCS_DOWNLOAD_PATH}/yocs_velocity_smoother)
-
-# if (NOT EXISTS "${YOCS_DEPENDENCY_PATH}")
-#   message(STATUS "Downloading yocs_velocity_smoother")
-#   message(STATUS "${YOCS_DOWNLOAD_PATH}")
-
-#   execute_process(
-#     COMMAND git clone ${YOCS_URL} ${YOCS_DEPENDENCY_PATH}
-#   )
-
-#   execute_process(
-#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../..
-#     COMMAND catkin_make --pkg yocs_velocity_smoother
-#   )
-# endif()
-# #end of velocity smoother
-
 include_directories(
   include
   ${champ_INCLUDE_DIRS}
@@ -64,27 +43,38 @@ install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME} 
 )
 
+# Add library for quadruped controller
 add_library(quadruped_controller SHARED src/quadruped_controller.cpp)
 ament_target_dependencies(quadruped_controller ${dependencies})
+
+# Add new IK.cpp source and create executable for it
+add_library(inverse_kinematics SHARED src/IK.cpp)
+ament_target_dependencies(inverse_kinematics ${dependencies})
+
+add_executable(inverse_kinematics_node src/inverse_kinematics_node.cpp)
+target_link_libraries(inverse_kinematics_node inverse_kinematics)
+ament_target_dependencies(inverse_kinematics_node ${dependencies})
+
+# Add existing quadruped controller node
 add_executable(quadruped_controller_node src/quadruped_controller_node.cpp)
 target_link_libraries(quadruped_controller_node quadruped_controller)
 ament_target_dependencies(quadruped_controller_node ${dependencies})
 
-
+# Add message relay node
 add_library(message_relay SHARED src/message_relay.cpp)
 ament_target_dependencies(message_relay ${dependencies})
 add_executable(message_relay_node src/message_relay_node.cpp)
 target_link_libraries(message_relay_node message_relay)
 ament_target_dependencies(message_relay_node ${dependencies})
 
-
+# Add state estimation node
 add_library(state_estimation SHARED src/state_estimation.cpp)
 ament_target_dependencies(state_estimation ${dependencies})
 add_executable(state_estimation_node src/state_estimation_node.cpp)
 target_link_libraries(state_estimation_node state_estimation)
 ament_target_dependencies(state_estimation_node ${dependencies})
 
-
+# Install targets
 install(TARGETS 
     quadruped_controller
     quadruped_controller_node
@@ -92,18 +82,22 @@ install(TARGETS
     message_relay_node
     state_estimation
     state_estimation_node
+    inverse_kinematics
+    inverse_kinematics_node
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
 )
 
-
+# Install executables
 install(TARGETS 
     quadruped_controller_node
     message_relay_node
     state_estimation_node
+    inverse_kinematics_node
     DESTINATION lib/${PROJECT_NAME}
 )
+
 ament_export_include_directories(include)
 ament_export_dependencies(${dependencies})
 

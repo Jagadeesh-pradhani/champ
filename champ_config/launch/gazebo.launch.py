@@ -27,13 +27,19 @@ def generate_launch_description():
     descr_pkg_share = launch_ros.substitutions.FindPackageShare(
         package="champ_description"
     ).find("champ_description")
-    joints_config = os.path.join(config_pkg_share, "config/joints/joints.yaml")
+
+    spot_pkg_share = launch_ros.substitutions.FindPackageShare(
+        package="quadruped_robot"
+    ).find("quadruped_robot")
+
+
+    joints_config = os.path.join(config_pkg_share, "config/joints/spot_joints.yaml")
     ros_control_config = os.path.join(
         config_pkg_share, "/config/ros_control/ros_control.yaml"
     )
-    gait_config = os.path.join(config_pkg_share, "config/gait/gait.yaml")
-    links_config = os.path.join(config_pkg_share, "config/links/links.yaml")
-    default_model_path = os.path.join(descr_pkg_share, "urdf/champ.urdf.xacro")
+    gait_config = os.path.join(config_pkg_share, "config/gait/spot_gait.yaml")
+    links_config = os.path.join(config_pkg_share, "config/links/spot_links.yaml")
+    default_model_path = os.path.join(spot_pkg_share, "urdf/new.urdf.xacro")
     default_world_path = os.path.join(config_pkg_share, "worlds/outdoor.world")
 
     declare_use_sim_time = DeclareLaunchArgument(

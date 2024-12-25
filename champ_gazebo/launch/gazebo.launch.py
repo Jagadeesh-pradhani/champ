@@ -38,7 +38,7 @@ def generate_launch_description():
     declare_lite = DeclareLaunchArgument("lite", default_value="False")
     declare_ros_control_file = DeclareLaunchArgument(
         "ros_control_file",
-        default_value=os.path.join(gz_pkg_share, "config/ros_control.yaml"),
+        default_value=os.path.join(gz_pkg_share, "config/spot_control.yaml"),
     )
     declare_gazebo_world = DeclareLaunchArgument(
         "world", default_value=os.path.join(gz_pkg_share, "worlds/default.world")
